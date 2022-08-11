@@ -1,6 +1,6 @@
-import Filter from "./Filter/Filter.js";
-import { normalizeString, removeListItem, toggle } from "./utils/utils.js";
+import {normalizeString, toggle} from "./utils/utils.js";
 import CardRecipesFactory from "./Factory/CardRecipesFactory.js";
+
 export default class SearchDropDown {
   constructor(recipes) {
     //console.log('je suis ici  sorted', recipes.length)
@@ -12,7 +12,7 @@ export default class SearchDropDown {
     this.dropIngredient = document.querySelector(".dropdown-list-ingredients");
     this.dropAppliance = document.querySelector(".dropdown-list-appliances");
     this.dropUstensils = document.querySelector(".dropdown-list-ustensils");
-    //this.filter = new Filter(this.recipes);
+
     this.displayItem("ingredients");
     this.displayItem("appliances");
     this.displayItem("ustensils");
@@ -30,7 +30,7 @@ export default class SearchDropDown {
       listDOM.innerText = item[0].toUpperCase() + item.slice(1);
       //console.log(listDOM)
       listDOM.addEventListener("click", () => this.addBadge(type, item));
-
+    
       return domBlock.appendChild(listDOM);
     });
   }
@@ -39,7 +39,6 @@ export default class SearchDropDown {
     let tableauIngredients = [];
     let tableauUstensils = [];
     let tableauAppliances = [];
-    let itemToDisplay = [];
     switch (type) {
       case "ingredients":
         document.querySelector(".ingredients").onclick = (e) => {
@@ -64,52 +63,10 @@ export default class SearchDropDown {
             this.dropIngredient,
             "ingredients"
           );
-          //  this.badge.badgeEvent( this.tags, "ingredients")
+         
         };
+        
 
-        this.inputIngredient.oninput = (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-         // this.filter.onfocusInput("ingredients");
-          const searchString = e.target.value;
-          this.recipes.forEach((recipe) => {
-            const recipeIngredients = recipe.ingredients;
-            recipeIngredients.forEach((ingredients) => {
-              //  console.log(ingredients)
-              const ingredient = ingredients.ingredient.toLowerCase();
-              if (!tableauIngredients.includes(ingredient)) {
-                tableauIngredients.push(ingredient);
-                itemToDisplay = tableauIngredients.filter((item) =>
-                  item.startsWith(e.target.value)
-                );
-                removeListItem("ingredients");
-                this.generateItems(
-                  itemToDisplay,
-                  this.dropIngredient,
-                  "ingredients"
-                );
-              }
-
-              //  this.badge.badgeEvent( this.tags, "ingredients")
-            });
-          });
-
-          if (!searchString.length == 0) {
-            const filteredRecipe = this.recipes.filter((result) => {
-              console.log("RR", searchString.length);
-              if (
-                result.ingredients.find((items) => {
-                  return items.ingredient.toLowerCase().includes(searchString);
-                }) != undefined
-              ) {
-                return result;
-              }
-            });
-            new SearchDropDown(filteredRecipe);
-          } else {
-            new SearchDropDown(this.recipes);
-          }
-        };
         break;
       case "appliances":
         document.querySelector(".appliances").onclick = (e) => {
@@ -130,47 +87,9 @@ export default class SearchDropDown {
             this.dropAppliance,
             "appliances"
           );
-          //  this.badge.badgeEvent( this.tags, "appliances")
         };
 
-        this.inputAppliance.oninput = (e) => {
-         // this.filter.onfocusInput("appliances");
-          e.preventDefault();
-          e.stopPropagation();
-          const searchString = e.target.value;
-          this.recipes.forEach((recipe) => {
-            const recipeAppliance = recipe.appliance;
-            if (!tableauAppliances.includes(recipeAppliance)) {
-              tableauAppliances.push(recipeAppliance);
-              return this.generateItems(
-                itemToDisplay,
-                this.dropAppliance,
-                "appliances"
-              );
-            }
-            itemToDisplay = tableauAppliances.filter((item) =>
-              item.startsWith(e.target.value)
-            );
-            removeListItem("appliances");
-            this.generateItems(itemToDisplay, this.dropAppliance, "appliances");
-            //  this.badge.badgeEvent( this.tags, "appliances")
-          });
-
-          //   console.log(itemToDisplay);
-          if (!searchString.length == 0) {
-            const filteredRecipe = this.recipes.filter((result) => {
-              if (result.appliance.toLowerCase().includes(searchString)) {
-                return result;
-              }
-            });
-
-           new SearchDropDown(filteredRecipe);
-           
-          } else {
-           new SearchDropDown(this.recipes);
-        
-          }
-        };
+      
         break;
       case "ustensils":
         document.querySelector(".ustensils").onclick = (e) => {
@@ -190,56 +109,9 @@ export default class SearchDropDown {
             });
           });
           this.generateItems(tableauUstensils, this.dropUstensils, "ustensils");
-          //  this.badge.badgeEvent( this.tags, "ustensils")
         };
 
-        this.inputUstensils.oninput = (e) => {
-         // this.filter.onfocusInput("ustensils");
-          const searchString = e.target.value;
-          this.recipes.forEach((recipe) => {
-            const itemUstensils = recipe.ustensils;
-            itemUstensils.forEach((ustensil) => {
-              const ustensilItem = ustensil.toLowerCase();
-              if (!tableauUstensils.includes(ustensilItem)) {
-                tableauUstensils.push(ustensilItem);
-                return this.generateItems(
-                  itemToDisplay,
-                  this.dropUstensils,
-                  "ustensils"
-                );
-              }
-              itemToDisplay = tableauUstensils.filter((item) =>
-                item.startsWith(e.target.value)
-              );
-              removeListItem("ustensils");
-              this.generateItems(
-                itemToDisplay,
-                this.dropUstensils,
-                "ustensils"
-              );
-            });
-            //  this.badge.badgeEvent( this.tags, "ustensils")
-          });
-          console.log(tableauUstensils);
-          console.log(itemToDisplay);
-          if (!searchString.length == 0) {
-            const filteredRecipe = this.recipes.filter((result) => {
-              console.log("RR", searchString.length);
-              if (
-                result.ustensils.find((items) => {
-                  return items.toLowerCase().includes(searchString);
-                }) != undefined
-              ) {
-                return result;
-              }
-            });
-            new SearchDropDown(filteredRecipe);
-      
-          } else {
-            new SearchDropDown(this.recipes);
-           
-          }
-        };
+        
         break;
       default:
         break;
@@ -254,10 +126,10 @@ export default class SearchDropDown {
     if (!this.tags.includes(badgeText)) {
       this.tags.push(badgeText);
       const tagBadge = `
-       <div id="tagItem" class="thumbnailTag thumbnail ${filter}" data-value ="${badgeText}">
-           <button id="btn-${filter}" >${badgeText}</button>
-           <i class="far fa-times-circle" data-type="${filter}"></i>
-       </div>`;
+      <div id="tagItem" class="thumbnailTag thumbnail tags_${filter}" data-value ="${badgeText}">
+          <button id="btn-${filter}" >${badgeText}</button>
+          <i class="far fa-times-circle" data-type="${filter}"></i>
+      </div>`;
 
       let currentTag = document.querySelector("#thumbnail-tags-container");
 
@@ -297,6 +169,7 @@ export default class SearchDropDown {
     }
     const viewCard = new CardRecipesFactory(filtred);
     viewCard.Recipes();
+    console.log(filtred)
     new SearchDropDown(filtred);
   }
 

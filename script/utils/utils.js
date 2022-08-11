@@ -17,6 +17,7 @@ export function closeAllFilter() {
 }
 
 export function removeListItem(types) {
+  console.log("je fonctionne", types)
   document.querySelector(`.dropdown-list-${types}`).innerHTML = "";
 }
 

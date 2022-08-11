@@ -33,7 +33,7 @@
   margin-right: auto;
 }
 
-.thumbnail.ingredients {
+.thumbnail.tags_ingredients {
   background-color: var(--blue);
 
   border: 0;
@@ -42,7 +42,7 @@
   width: 107px;
 }
 
-.thumbnail.appliances {
+.thumbnail.tags_appliances {
   background-color: var(--green);
   border: 0;
   color: var(--white);
@@ -50,7 +50,7 @@
   width: 107px;
 }
 
-.thumbnail.ustensils {
+.thumbnail.tags_ustensils {
   background-color: var(--red);
   border: 0;
   color: var(--white);

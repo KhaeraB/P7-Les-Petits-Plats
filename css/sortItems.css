@@ -11,7 +11,8 @@
   }
   
   .search-menu {
-    width: fit-content
+    width: fit-content;
+    width: auto; 
   }
   
   .search-menu input {
@@ -55,6 +56,7 @@
     color: white;
     pointer-events: none;
     cursor: pointer;
+    z-index: 1000;
   }
   
   .search-menu .dropdown-list-ingredients, .search-menu .dropdown-list-appliances, .search-menu .dropdown-list-ustensils {
