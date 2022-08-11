@@ -1,5 +1,6 @@
 import CardRecipesFactory from "../Factory/CardRecipesFactory.js";
 import SearchDropDown from "../SearchDropDown.js";
+import { normalizeString } from "../utils/utils.js";
 export default class Filter {
   constructor(recipes) {
     this.recipes = recipes;
@@ -10,7 +11,6 @@ export default class Filter {
     this.inputIngredient = document.getElementById("search-ingredients");
     this.inputAppliance = document.getElementById("search-appliances");
     this.inputUstensils = document.getElementById("search-ustensils");
-    
   }
   onfocusInput(type) {
     this.input.onfocus = () => {
@@ -41,37 +41,41 @@ export default class Filter {
       }
     };
   }
- 
 
   FilterDisplayRecipes() {
     this.onfocusInput();
     this.input.oninput = (e) => {
-      const searchString = e.target.value;
-      console.log(searchString);
-
+      var searchString = e.target.value;
       if (searchString.length > 2) {
-        const filteredRecipe = this.recipes.filter((result) => {
-          console.log("RR", searchString.length);
-
+        const recipesFiltered = [];
+        for (let recipe of this.recipes) {
           if (
-            result.name.toLowerCase().includes(searchString) ||
-            result.description.toLowerCase().includes(searchString) ||
-            result.ingredients.find((items) => {
-              return items.ingredient.toLowerCase().includes(searchString);
-            }) != undefined
+            recipe.name.toLowerCase().includes(searchString) ||
+            recipe.description.toLowerCase().includes(searchString)
           ) {
-            return result;
+            recipesFiltered.push(recipe);
           }
-        });
-        const viewCard = new CardRecipesFactory(filteredRecipe);
+          for (let ingredients of recipe.ingredients) {
+            const ingredient = normalizeString(ingredients.ingredient);
+            if (ingredient.includes(searchString)) {
+              recipesFiltered.push(recipe);
+            }
+          }
+        }
+        console.log(recipesFiltered);
+        const viewCard = new CardRecipesFactory([...new Set(recipesFiltered)]);
         viewCard.Recipes();
-        new SearchDropDown(filteredRecipe);
-     
-      } else {
+
+        new SearchDropDown([...new Set(recipesFiltered)]);
+        
+      }
+      if (searchString.length <= 2) {
         const viewCard = new CardRecipesFactory(this.recipes);
         viewCard.Recipes();
-        new SearchDropDown(this.recipes);
+
+         new SearchDropDown(this.recipes);
+        
       }
     };
-  } 
+  }
 }
