@@ -1,8 +1,8 @@
 import { normalizeString, toggle, removeListItem } from "./utils/utils.js";
 import CardRecipesFactory from "./Factory/CardRecipesFactory.js";
 import {recipes } from "../data/recipes.js"
-let tags = [];
-let allRecipes = recipes
+let TAGS = [];
+const ALL_RECIPES = recipes
 export default class SearchDropDown {
   constructor(recipes) {
     //console.log('je suis ici  sorted', recipes.length)
@@ -22,8 +22,8 @@ export default class SearchDropDown {
     this.displayItem("ingredients");
     this.displayItem("appliances");
     this.displayItem("ustensils");
-   
- 
+    this.filtred = [];
+    this.removeBagde()
   }
 
   generateItems(tab, domBlock, type) {
@@ -38,7 +38,10 @@ export default class SearchDropDown {
       listDOM.setAttribute("data-type", `${itemNormalized}`);
       listDOM.innerText = item[0].toUpperCase() + item.slice(1);
       //console.log(listDOM)
-      listDOM.addEventListener("click", () => this.addBadge(type, item));
+      listDOM.addEventListener("click", () =>{ 
+        this.addBadge(type, item)
+        this.removeBagde(type)
+      });
       return domBlock.appendChild(listDOM);
     });
   }
@@ -127,78 +130,87 @@ export default class SearchDropDown {
   }
   addBadge(filter, badgeText) {
     // toggle(filter)
-    let filtred = [];
+    
     //console.log(document.querySelector("#thumbnail-tags-container"))
     // console.log("filter , badgeText :", filter + " ", badgeText);
 
-    if (!tags.includes(badgeText)) {
-      tags.push(badgeText);
+    if (!TAGS.includes(badgeText)) {
+      TAGS.push(badgeText);
       const tagBadge = `
       <div id="tagItem" class="thumbnailTag thumbnail tags_${filter}" data-value ="${badgeText}">
           <button id="btn-${filter}" >${badgeText}</button>
           <i class="far fa-times-circle" data-type="${filter}"></i>
       </div>`;
-
+      console.log("addB", this.filtred)
       let currentTag = document.querySelector("#thumbnail-tags-container");
 
       currentTag.innerHTML += tagBadge;
      
-      filtred = [...this.filterList(filter)];
-      filtred = [
-        ...new Set(filtred),
+      this.filtred = [...this.filterList(filter)];
+      this.filtred = [
+        ...new Set(this.filtred),
       ];
-      this.buildNewListRecipes(filtred);
 
-      const close = document.getElementsByClassName(`fa-times-circle`);
-      for (let closeItem of close) {
-        closeItem.addEventListener("click", (e) => {
-          const textContent =
-            e.currentTarget.parentNode.getAttribute("data-value");
-          const tagType = e.currentTarget.getAttribute("data-type");
-          console.log("tagType: " + tagType + " " + textContent);
+      this.buildNewListRecipes(this.filtred);
 
-          tags = tags.filter((tag) => tag != textContent);
-
-          // appel des CARD avec des fonctions filtrer par rapport au tags selectionné / Je boucle sur toute les recipes et je regarde si recipies.ingredient inclus dans tableau des tags view card avec filerRecipes
-
-          filtred = [...this.filterList(tagType)];
-
-         this.buildNewListRecipes(filtred);
-          e.currentTarget.parentNode.remove();
-        });
-      }
     }
   }
+removeBagde(type){
 
+  const close = document.getElementsByClassName(`fa-times-circle`);
+      for (let closeItem of close) {
+        closeItem.addEventListener("click", (e) => {
+        const textContent = e.currentTarget.parentNode.getAttribute("data-value");
+          //const tagType = e.currentTarget.getAttribute("data-type");
+         console.log("tagType: ", textContent);
+
+          TAGS = TAGS.filter((tag) => tag != textContent);
+
+          // appel des CARD avec des fonctions filtrer par rapport au tags selectionné / Je boucle sur toute les recipes et je regarde si 
+          //recipies.ingredient inclus dans tableau des tags view card avec filerRecipes
+
+          this.filtred = [...this.filterList(type)];
+          this.filtred = [
+            ...new Set(this.filtred),
+          ];
+        //  console.log("removeB", this.filtred)
+          e.currentTarget.parentNode.remove();
+
+          this.buildNewListRecipes(this.filtred);
+         
+          //new SearchDropDown(this.filtred)
+         // const viewCard = new CardRecipesFactory(this.filtred);
+         // viewCard.Recipes();
+          console.log(this.filtred)
+         
+        });
+      }
+}
   // INITIALIZE LIST CARD_RECIPES
   buildNewListRecipes(filtred) {
     //console.log("list filtrée est : ", tags);
-    console.log("ici tags", tags)
-    if (tags.length != 0) {
+    console.log("ici tags", TAGS)
+    if (TAGS.length != 0) {
       const viewCard = new CardRecipesFactory(filtred);
       viewCard.Recipes();
       console.log("dans la condition",filtred);
       new SearchDropDown(filtred)
     }else{
-      const viewCard = new CardRecipesFactory(allRecipes);
+      const viewCard = new CardRecipesFactory(ALL_RECIPES);
       viewCard.Recipes();
       console.log(filtred);
-      new SearchDropDown(allRecipes)
+      new SearchDropDown(ALL_RECIPES)
     }
-    
-    
   }
   filterList(tagType) {
-    let filteredRecipes = new Set(allRecipes);
+    let filteredRecipes = new Set(ALL_RECIPES);
     let  RecipesByBadges = new Set()
     console.log("changement?",this.recipes)
-    tags.forEach((tag) => {
-      
-        tag = tag.toLowerCase();
-     RecipesByBadges = this.recipes.filter((recette) => {
+    TAGS.forEach((tag) => {
+      tag = tag.toLowerCase();
+      RecipesByBadges = this.recipes.filter((recette) => {
         // je fais un lowercase sur tag.value pour bien comparer ensuite
       
-
         // INGREDIENTS
 
         if (tagType == "ingredients") {
@@ -210,7 +222,6 @@ export default class SearchDropDown {
               ingredientfounded = true;
               break
             }
-          
           }
           if (ingredientfounded == true) {
         
