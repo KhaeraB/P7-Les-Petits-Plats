@@ -1,6 +1,8 @@
 import { normalizeString, toggle, removeListItem } from "./utils/utils.js";
 import CardRecipesFactory from "./Factory/CardRecipesFactory.js";
-
+import {recipes } from "../data/recipes.js"
+let tags = [];
+let allRecipes = recipes
 export default class SearchDropDown {
   constructor(recipes) {
     //console.log('je suis ici  sorted', recipes.length)
@@ -20,8 +22,8 @@ export default class SearchDropDown {
     this.displayItem("ingredients");
     this.displayItem("appliances");
     this.displayItem("ustensils");
-
-    this.tags = [];
+   
+ 
   }
 
   generateItems(tab, domBlock, type) {
@@ -37,7 +39,6 @@ export default class SearchDropDown {
       listDOM.innerText = item[0].toUpperCase() + item.slice(1);
       //console.log(listDOM)
       listDOM.addEventListener("click", () => this.addBadge(type, item));
-
       return domBlock.appendChild(listDOM);
     });
   }
@@ -45,8 +46,7 @@ export default class SearchDropDown {
   displayItem(type) {
     switch (type) {
       case "ingredients":
-        console.log(document.getElementsByClassName("ingredients"));
-        document.querySelector(".ingredients").onclick = (e) => {
+      document.querySelector(".ingredients").onclick = (e) => {
           e.stopPropagation();
 
           //toggle("ingredients");
@@ -131,8 +131,8 @@ export default class SearchDropDown {
     //console.log(document.querySelector("#thumbnail-tags-container"))
     // console.log("filter , badgeText :", filter + " ", badgeText);
 
-    if (!this.tags.includes(badgeText)) {
-     
+    if (!tags.includes(badgeText)) {
+      tags.push(badgeText);
       const tagBadge = `
       <div id="tagItem" class="thumbnailTag thumbnail tags_${filter}" data-value ="${badgeText}">
           <button id="btn-${filter}" >${badgeText}</button>
@@ -142,8 +142,11 @@ export default class SearchDropDown {
       let currentTag = document.querySelector("#thumbnail-tags-container");
 
       currentTag.innerHTML += tagBadge;
-      this.tags.push(badgeText);
+     
       filtred = [...this.filterList(filter)];
+      filtred = [
+        ...new Set(filtred),
+      ];
       this.buildNewListRecipes(filtred);
 
       const close = document.getElementsByClassName(`fa-times-circle`);
@@ -154,14 +157,13 @@ export default class SearchDropDown {
           const tagType = e.currentTarget.getAttribute("data-type");
           console.log("tagType: " + tagType + " " + textContent);
 
-          this.tags = this.tags.filter((tag) => tag != textContent);
+          tags = tags.filter((tag) => tag != textContent);
 
-          // appel des CARD avec des fonctions filtrer par rapport au this.tags selectionné / Je boucle sur toute les recipes et je regarde si recipies.ingredient inclus dans tableau des tags view card avec filerRecipes
+          // appel des CARD avec des fonctions filtrer par rapport au tags selectionné / Je boucle sur toute les recipes et je regarde si recipies.ingredient inclus dans tableau des tags view card avec filerRecipes
 
           filtred = [...this.filterList(tagType)];
 
-          this.buildNewListRecipes(filtred);
-
+         this.buildNewListRecipes(filtred);
           e.currentTarget.parentNode.remove();
         });
       }
@@ -170,19 +172,27 @@ export default class SearchDropDown {
 
   // INITIALIZE LIST CARD_RECIPES
   buildNewListRecipes(filtred) {
-    console.log("list filtrée est : ", this.tags);
-    if (this.tags.length == 0) {
-      filtred = this.recipes;
+    //console.log("list filtrée est : ", tags);
+    console.log("ici tags", tags)
+    if (tags.length != 0) {
+      const viewCard = new CardRecipesFactory(filtred);
+      viewCard.Recipes();
+      console.log("dans la condition",filtred);
+      new SearchDropDown(filtred)
+    }else{
+      const viewCard = new CardRecipesFactory(allRecipes);
+      viewCard.Recipes();
+      new SearchDropDown(allRecipes)
     }
-    const viewCard = new CardRecipesFactory(filtred);
-    viewCard.Recipes();
-    console.log(filtred);
-    new SearchDropDown(filtred);
+    
+    
   }
 
   filterList(tagType) {
-    let filtredRecipes = [];
-    this.tags.forEach((tag) => {
+    let filtredRecipes = new Set(this.recipes);
+    let  RecipesByBadges = new Set()
+    console.log("changement?",this.recipes)
+    tags.forEach((tag) => {
       this.recipes.filter((recette) => {
         // je fais un lowercase sur tag.value pour bien comparer ensuite
         tag = tag.toLowerCase();
@@ -195,13 +205,16 @@ export default class SearchDropDown {
           for (let i = 0; i < recette.ingredients.length; i++) {
             if (recette.ingredients[i].ingredient.toLowerCase() == tag) {
               ingredientfounded = true;
-              break;
+              break
             }
+          
           }
           if (ingredientfounded == true) {
-            filtredRecipes.push(recette);
+            RecipesByBadges.add(recette);
             return recette;
           }
+          new SearchDropDown([...filtredRecipes])
+
         }
         // APPAREILS
 
@@ -211,34 +224,53 @@ export default class SearchDropDown {
           for (let i = 0; i < recette.appliance.length; i++) {
             if (recette.appliance.toLowerCase() == tag) {
               appreilfounded = true;
-              break;
+              break
             }
+          
           }
           if (appreilfounded == true) {
-            filtredRecipes.push(recette);
+            RecipesByBadges.add(recette);
             return recette;
           }
         }
         // USTENSILES
         if (tagType == "ustensils") {
+          console.log("supp", tagType)
           let ustensilsfounded = false;
 
           for (let i = 0; i < recette.ustensils.length; i++) {
             if (recette.ustensils[i].toLowerCase() == tag) {
               ustensilsfounded = true;
-              break;
+              break
             }
+         
           }
           if (ustensilsfounded == true) {
-            filtredRecipes.push(recette);
+            RecipesByBadges.add(recette);
             return recette;
           }
         }
       });
     });
+    console.log("HAS", RecipesByBadges)
+    let intersectRecipes = new Set();
+    
+    for (let recipe of RecipesByBadges) {
+      if (filtredRecipes.has(recipe)) intersectRecipes.add(recipe);
+     // console.log("interce", intersectRecipes)
+    }
+
+    // intersect recipesHasKeyWord with actual filteredRecipes:
+    filtredRecipes = new Set([...intersectRecipes]);
+
+   // const viewCard = new CardRecipesFactory([...filtredRecipes]);
+    //viewCard.Recipes();
+
+   
 
     return filtredRecipes;
   }
+  
   filerByType(type) {
     let tableauIngredients = [];
     let tableauUstensils = [];
@@ -269,7 +301,7 @@ export default class SearchDropDown {
                 );
               }
 
-              //  this.badge.badgeEvent( this.tags, "ingredients")
+              //  this.badge.badgeEvent( tags, "ingredients")
             });
           });
 
@@ -311,7 +343,7 @@ export default class SearchDropDown {
               );
             }
 
-            //  this.badge.badgeEvent( this.tags, "appliances")
+            //  this.badge.badgeEvent( tags, "appliances")
           });
 
           //   console.log(itemToDisplay);
@@ -348,7 +380,7 @@ export default class SearchDropDown {
                 );
               }
             });
-            //  this.badge.badgeEvent( this.tags, "ustensils")
+            //  this.badge.badgeEvent( tags, "ustensils")
           });
           if (!searchString.length == 0) {
             const filteredRecipe = this.recipes.filter((result) => {

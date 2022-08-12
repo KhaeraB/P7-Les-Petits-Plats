@@ -1,14 +1,16 @@
 import CardRecipesFactory from "../Factory/CardRecipesFactory.js";
 import SearchDropDown from "../SearchDropDown.js";
+import { closeAllFilter } from "../utils/utils.js";
 export default class Filter {
   constructor(recipes) {
     this.recipes = recipes;
     this.input = document.getElementById("find");
     this.arrIngredient = [];
     this.tags = [];
-    this.onfocusInput;
+    this.onfocusInput();
   }
   onfocusInput(type) {
+    closeAllFilter()
     this.input.onfocus = () => {
       if (type == "ingredients") {
         document
@@ -45,9 +47,9 @@ export default class Filter {
       console.log(searchString);
 
       if (searchString.length > 2) {
-        const filteredRecipe = this.recipes.filter((result) => {
+        let filteredRecipe = this.recipes.filter((result) => {
           console.log("RR", searchString.length);
-
+          
           if (
             result.name.toLowerCase().includes(searchString) ||
             result.description.toLowerCase().includes(searchString) ||
@@ -58,6 +60,10 @@ export default class Filter {
             return result;
           }
         });
+        filteredRecipe = [
+          ...new Set(filteredRecipe),
+        ];
+
         const viewCard = new CardRecipesFactory(filteredRecipe);
         viewCard.Recipes();
         new SearchDropDown(filteredRecipe);

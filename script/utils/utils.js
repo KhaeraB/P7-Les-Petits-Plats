@@ -17,7 +17,6 @@ export function closeAllFilter() {
 }
 
 export function removeListItem(types) {
-  console.log("je fonctionne", types)
   document.querySelector(`.dropdown-list-${types}`).innerHTML = "";
 }
 
@@ -26,7 +25,6 @@ export function removeListItem(types) {
 export function toggle(type) {
   switch (type) {
     case "ingredients":
-      console.log("ouvert");
       document.querySelector(`.${type}`).classList.toggle("expanded");
       document.querySelector(`.appliances`).classList.remove("expanded");
       document.querySelector(`.ustensils`).classList.remove("expanded");
