@@ -182,24 +182,27 @@ export default class SearchDropDown {
     }else{
       const viewCard = new CardRecipesFactory(allRecipes);
       viewCard.Recipes();
+      console.log(filtred);
       new SearchDropDown(allRecipes)
     }
     
     
   }
-
   filterList(tagType) {
-    let filtredRecipes = new Set(this.recipes);
+    let filteredRecipes = new Set(allRecipes);
     let  RecipesByBadges = new Set()
     console.log("changement?",this.recipes)
     tags.forEach((tag) => {
-      this.recipes.filter((recette) => {
-        // je fais un lowercase sur tag.value pour bien comparer ensuite
+      
         tag = tag.toLowerCase();
+     RecipesByBadges = this.recipes.filter((recette) => {
+        // je fais un lowercase sur tag.value pour bien comparer ensuite
+      
 
         // INGREDIENTS
 
         if (tagType == "ingredients") {
+          console.log("dans ingre")
           let ingredientfounded = false;
 
           for (let i = 0; i < recette.ingredients.length; i++) {
@@ -210,15 +213,16 @@ export default class SearchDropDown {
           
           }
           if (ingredientfounded == true) {
-            RecipesByBadges.add(recette);
+        
             return recette;
           }
-          new SearchDropDown([...filtredRecipes])
+        
 
         }
         // APPAREILS
 
         if (tagType == "appliances") {
+          console.log("dans app")
           let appreilfounded = false;
 
           for (let i = 0; i < recette.appliance.length; i++) {
@@ -229,13 +233,13 @@ export default class SearchDropDown {
           
           }
           if (appreilfounded == true) {
-            RecipesByBadges.add(recette);
+        
             return recette;
           }
         }
         // USTENSILES
         if (tagType == "ustensils") {
-          console.log("supp", tagType)
+          console.log("dans ust")
           let ustensilsfounded = false;
 
           for (let i = 0; i < recette.ustensils.length; i++) {
@@ -246,29 +250,21 @@ export default class SearchDropDown {
          
           }
           if (ustensilsfounded == true) {
-            RecipesByBadges.add(recette);
+      
             return recette;
           }
         }
       });
-    });
-    console.log("HAS", RecipesByBadges)
-    let intersectRecipes = new Set();
+      console.log("HAS", RecipesByBadges)
     
-    for (let recipe of RecipesByBadges) {
-      if (filtredRecipes.has(recipe)) intersectRecipes.add(recipe);
-     // console.log("interce", intersectRecipes)
-    }
-
-    // intersect recipesHasKeyWord with actual filteredRecipes:
-    filtredRecipes = new Set([...intersectRecipes]);
-
-   // const viewCard = new CardRecipesFactory([...filtredRecipes]);
+      filteredRecipes = new Set(
+        [...RecipesByBadges].filter((recipe) => filteredRecipes.has(recipe))
+      );
+     // const viewCard = new CardRecipesFactory([...RecipesByBadges]);
     //viewCard.Recipes();
-
+    });
    
-
-    return filtredRecipes;
+    return RecipesByBadges;
   }
   
   filerByType(type) {
