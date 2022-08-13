@@ -1,11 +1,11 @@
 import { normalizeString, toggle, removeListItem } from "./utils/utils.js";
 import CardRecipesFactory from "./Factory/CardRecipesFactory.js";
 import {recipes } from "../data/recipes.js"
+import Filter from "./Filter/Filter.js";
 let TAGS = [];
 const ALL_RECIPES = recipes
 export default class SearchDropDown {
   constructor(recipes) {
-    //console.log('je suis ici  sorted', recipes.length)
     this.recipes = recipes;
     this.tagIngredient = document.getElementById("thumbnail-tags-container");
     this.inputIngredient = document.getElementById("search-ingredients");
@@ -23,7 +23,9 @@ export default class SearchDropDown {
     this.displayItem("appliances");
     this.displayItem("ustensils");
     this.filtred = [];
-    this.removeBagde()
+
+     this.input = document.getElementById("find");
+   
   }
 
   generateItems(tab, domBlock, type) {
@@ -37,10 +39,8 @@ export default class SearchDropDown {
       listDOM.setAttribute("data-item", `${itemNormalized}`);
       listDOM.setAttribute("data-type", `${itemNormalized}`);
       listDOM.innerText = item[0].toUpperCase() + item.slice(1);
-      //console.log(listDOM)
       listDOM.addEventListener("click", () =>{ 
         this.addBadge(type, item)
-        this.removeBagde(type)
       });
       return domBlock.appendChild(listDOM);
     });
@@ -82,8 +82,7 @@ export default class SearchDropDown {
 
           e.preventDefault();
           e.stopPropagation();
-          //  console.log("ici");
-          console.log("IndisplayITEM RECIPES", this.recipes.length);
+     
           this.recipes.forEach((recipe) => {
             const appliance = recipe.appliance.toLowerCase();
 
@@ -102,11 +101,8 @@ export default class SearchDropDown {
       case "ustensils":
         document.querySelector(".ustensils").onclick = (e) => {
           toggle("ustensils");
-
           e.preventDefault();
           e.stopPropagation();
-          //     console.log("ici");
-
           this.recipes.forEach((recipe) => {
             const itemUstensils = recipe.ustensils;
             itemUstensils.forEach((ustensil) => {
@@ -129,11 +125,7 @@ export default class SearchDropDown {
     }
   }
   addBadge(filter, badgeText) {
-    // toggle(filter)
-    
-    //console.log(document.querySelector("#thumbnail-tags-container"))
-    // console.log("filter , badgeText :", filter + " ", badgeText);
-
+   
     if (!TAGS.includes(badgeText)) {
       TAGS.push(badgeText);
       const tagBadge = `
@@ -141,143 +133,136 @@ export default class SearchDropDown {
           <button id="btn-${filter}" >${badgeText}</button>
           <i class="far fa-times-circle" data-type="${filter}"></i>
       </div>`;
-      console.log("addB", this.filtred)
+  
       let currentTag = document.querySelector("#thumbnail-tags-container");
 
       currentTag.innerHTML += tagBadge;
      
-      this.filtred = [...this.filterList(filter)];
+      this.filtred = [...this.filterList()];
       this.filtred = [
         ...new Set(this.filtred),
       ];
 
-      this.buildNewListRecipes(this.filtred);
+      this.buildNewListRecipes(this.filtred, filter);
+   
 
     }
   }
+
 removeBagde(type){
 
+ 
   const close = document.getElementsByClassName(`fa-times-circle`);
       for (let closeItem of close) {
         closeItem.addEventListener("click", (e) => {
+          e.stopPropagation()
+          e.preventDefault()
         const textContent = e.currentTarget.parentNode.getAttribute("data-value");
           //const tagType = e.currentTarget.getAttribute("data-type");
-         console.log("tagType: ", textContent);
 
           TAGS = TAGS.filter((tag) => tag != textContent);
 
-          // appel des CARD avec des fonctions filtrer par rapport au tags selectionné / Je boucle sur toute les recipes et je regarde si 
+          // appel des CARD avec des fonctions filtrer par rapport au tags selectionnÃ© / Je boucle sur toute les recipes et je regarde si 
           //recipies.ingredient inclus dans tableau des tags view card avec filerRecipes
 
-          this.filtred = [...this.filterList(type)];
+          this.filtred = [...this.filterList()];
           this.filtred = [
             ...new Set(this.filtred),
           ];
-        //  console.log("removeB", this.filtred)
+           new Filter(this.filtred)
+       
           e.currentTarget.parentNode.remove();
+           this.filterList()
 
-          this.buildNewListRecipes(this.filtred);
-         
-          //new SearchDropDown(this.filtred)
-         // const viewCard = new CardRecipesFactory(this.filtred);
-         // viewCard.Recipes();
-          console.log(this.filtred)
-         
+          this.buildNewListRecipes(this.filtred, type);
+        
         });
       }
 }
   // INITIALIZE LIST CARD_RECIPES
-  buildNewListRecipes(filtred) {
-    //console.log("list filtrée est : ", tags);
-    console.log("ici tags", TAGS)
-    if (TAGS.length != 0) {
+  buildNewListRecipes(filtred, type) {
+    console.log("TAGS : ", TAGS);
+   if(TAGS.length > 0)
+  {
+      this.removeBagde(type)
       const viewCard = new CardRecipesFactory(filtred);
       viewCard.Recipes();
-      console.log("dans la condition",filtred);
+  
       new SearchDropDown(filtred)
     }else{
       const viewCard = new CardRecipesFactory(ALL_RECIPES);
       viewCard.Recipes();
-      console.log(filtred);
       new SearchDropDown(ALL_RECIPES)
     }
   }
-  filterList(tagType) {
-    let filteredRecipes = new Set(ALL_RECIPES);
+
+
+
+
+/**
+ * *Collect Appilance datas
+   * @returns {Array.string}
+   */
+  collectAppliances(recipe) {
+    const appliances = new Set();
+
+   
+      appliances.add(recipe.appliance.toLowerCase());
+    
+
+    return [...appliances];
+  }
+
+  /**
+   * *Collect ingredients datas
+   * @returns {Array.string}
+   */
+  collectIngredients(recipe) {
+    const ingredients = new Set();
+
+    console.log(recipe)
+      for (let item of recipe.ingredients) {
+        ingredients.add(item.ingredient.toLowerCase());
+      
+    }
+
+    return [...ingredients];
+  }
+
+  /**
+   * *Collect ustensils datas
+   * @returns {Array.string}
+   */
+  collectUstensils(recipe) {
+    const ustensils = new Set();
+    
+      for (let ustensil of recipe.ustensils) {
+        ustensils.add(ustensil.toLowerCase());
+      
+    }
+
+    return [...ustensils];
+  }
+
+
+
+  filterList() {
     let  RecipesByBadges = new Set()
-    console.log("changement?",this.recipes)
     TAGS.forEach((tag) => {
       tag = tag.toLowerCase();
-      RecipesByBadges = this.recipes.filter((recette) => {
-        // je fais un lowercase sur tag.value pour bien comparer ensuite
-      
-        // INGREDIENTS
-
-        if (tagType == "ingredients") {
-          console.log("dans ingre")
-          let ingredientfounded = false;
-
-          for (let i = 0; i < recette.ingredients.length; i++) {
-            if (recette.ingredients[i].ingredient.toLowerCase() == tag) {
-              ingredientfounded = true;
-              break
-            }
-          }
-          if (ingredientfounded == true) {
-        
-            return recette;
-          }
-        
-
-        }
-        // APPAREILS
-
-        if (tagType == "appliances") {
-          console.log("dans app")
-          let appreilfounded = false;
-
-          for (let i = 0; i < recette.appliance.length; i++) {
-            if (recette.appliance.toLowerCase() == tag) {
-              appreilfounded = true;
-              break
-            }
-          
-          }
-          if (appreilfounded == true) {
-        
-            return recette;
-          }
-        }
-        // USTENSILES
-        if (tagType == "ustensils") {
-          console.log("dans ust")
-          let ustensilsfounded = false;
-
-          for (let i = 0; i < recette.ustensils.length; i++) {
-            if (recette.ustensils[i].toLowerCase() == tag) {
-              ustensilsfounded = true;
-              break
-            }
-         
-          }
-          if (ustensilsfounded == true) {
-      
-            return recette;
-          }
-        }
-      });
-      console.log("HAS", RecipesByBadges)
-    
-      filteredRecipes = new Set(
-        [...RecipesByBadges].filter((recipe) => filteredRecipes.has(recipe))
-      );
-     // const viewCard = new CardRecipesFactory([...RecipesByBadges]);
-    //viewCard.Recipes();
+      RecipesByBadges = this.recipes.filter((recipe) => {
+  
+          if (this.collectIngredients(recipe).includes(tag) ||
+          this.collectAppliances(recipe).includes(tag) ||
+          this.collectUstensils(recipe).includes(tag)) return recipe
+  
+       });
     });
-   
+ 
     return RecipesByBadges;
   }
   
+
   filerByType(type) {
     let tableauIngredients = [];
     let tableauUstensils = [];
@@ -288,12 +273,11 @@ removeBagde(type){
         this.inputIngredient.oninput = (e) => {
           e.preventDefault();
           e.stopPropagation();
-          // this.filter.onfocusInput("ingredients");
           const searchString = e.target.value;
           this.recipes.forEach((recipe) => {
             const recipeIngredients = recipe.ingredients;
             recipeIngredients.forEach((ingredients) => {
-              //  console.log(ingredients)
+        
               const ingredient = ingredients.ingredient.toLowerCase();
               if (!tableauIngredients.includes(ingredient)) {
                 tableauIngredients.push(ingredient);
@@ -307,14 +291,12 @@ removeBagde(type){
                   "ingredients"
                 );
               }
-
-              //  this.badge.badgeEvent( tags, "ingredients")
             });
           });
 
           if (!searchString.length == 0) {
             const filteredRecipe = this.recipes.filter((result) => {
-              console.log("RR", searchString.length);
+            
               if (
                 result.ingredients.find((items) => {
                   return items.ingredient.toLowerCase().includes(searchString);
@@ -331,7 +313,6 @@ removeBagde(type){
         break;
       case "appliances":
         this.inputAppliance.oninput = (e) => {
-          // this.filter.onfocusInput("appliances");
           e.preventDefault();
           e.stopPropagation();
           const searchString = e.target.value;
@@ -349,11 +330,8 @@ removeBagde(type){
                 "appliances"
               );
             }
-
-            //  this.badge.badgeEvent( tags, "appliances")
           });
 
-          //   console.log(itemToDisplay);
           if (!searchString.length == 0) {
             const filteredRecipe = this.recipes.filter((result) => {
               if (result.appliance.toLowerCase().includes(searchString)) {
@@ -391,7 +369,7 @@ removeBagde(type){
           });
           if (!searchString.length == 0) {
             const filteredRecipe = this.recipes.filter((result) => {
-              console.log("RR", searchString.length);
+           
               if (
                 result.ustensils.find((items) => {
                   return items.toLowerCase().includes(searchString);

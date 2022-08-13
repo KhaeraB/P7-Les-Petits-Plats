@@ -46,15 +46,15 @@ export default class Filter {
       const searchString = e.target.value;
       console.log(searchString);
 
-      if (searchString.length > 2) {
+      if (this.input.value.length > 2) {
         let filteredRecipe = this.recipes.filter((result) => {
-          console.log("RR", searchString.length);
+       
           
           if (
-            result.name.toLowerCase().includes(searchString) ||
-            result.description.toLowerCase().includes(searchString) ||
+            result.name.toLowerCase().includes(this.input.value) ||
+            result.description.toLowerCase().includes(this.input.value) ||
             result.ingredients.find((items) => {
-              return items.ingredient.toLowerCase().includes(searchString);
+              return items.ingredient.toLowerCase().includes(this.input.value);
             }) != undefined
           ) {
             return result;

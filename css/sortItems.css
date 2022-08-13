@@ -89,7 +89,7 @@
   
   .search-menu .dropdown-list-ingredients #tag , .search-menu .dropdown-list-appliances #tag, .search-menu .dropdown-list-ustensils #tag{
     width: 200px;
-    margin: 8px;
+    margin-bottom: 10px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -121,7 +121,9 @@
   .search-menu.expanded .dropdown-list-ingredients, .search-menu.expanded .dropdown-list-appliances, .search-menu.expanded .dropdown-list-ustensils {
     display: flex;
   }
-  
+  .search-menu.expanded .dropdown-list-ingredients>*, .search-menu.expanded .dropdown-list-appliances>*, .search-menu.expanded .dropdown-list-ustensils>* {
+    flex: 0 0 33.3333%;
+}
   .search-menu.expanded input {
     border-radius: 5px 5px 0 0;
   }
