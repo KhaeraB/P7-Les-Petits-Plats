@@ -24,7 +24,8 @@ export default class SearchDropDown {
     this.displayItem("ustensils");
     this.filtred = [];
 
-     this.input = document.getElementById("find");
+    new Filter(this.recipes)
+    this.input = document.getElementById("find");
    
   }
 
@@ -143,13 +144,13 @@ export default class SearchDropDown {
         ...new Set(this.filtred),
       ];
 
-      this.buildNewListRecipes(this.filtred, filter);
+      this.buildNewListRecipes(this.filtred);
    
 
     }
   }
 
-removeBagde(type){
+removeBagde(){
 
  
   const close = document.getElementsByClassName(`fa-times-circle`);
@@ -169,27 +170,30 @@ removeBagde(type){
           this.filtred = [
             ...new Set(this.filtred),
           ];
-           new Filter(this.filtred)
-       
           e.currentTarget.parentNode.remove();
            this.filterList()
 
-          this.buildNewListRecipes(this.filtred, type);
+          this.buildNewListRecipes(this.filtred);
         
         });
       }
 }
   // INITIALIZE LIST CARD_RECIPES
-  buildNewListRecipes(filtred, type) {
+  buildNewListRecipes(filtred) {
     console.log("TAGS : ", TAGS);
    if(TAGS.length > 0)
-  {
-      this.removeBagde(type)
+  {   this.removeBagde()
       const viewCard = new CardRecipesFactory(filtred);
       viewCard.Recipes();
-  
       new SearchDropDown(filtred)
     }else{
+      this.removeBagde()
+      console.log(this.recipes)
+      const viewCard = new CardRecipesFactory(this.recipes);
+      viewCard.Recipes();
+      new SearchDropDown(this.recipes)
+    }
+    if(TAGS.length == 0){
       const viewCard = new CardRecipesFactory(ALL_RECIPES);
       viewCard.Recipes();
       new SearchDropDown(ALL_RECIPES)
