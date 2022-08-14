@@ -42,7 +42,10 @@ export default class SearchDropDown {
       return domBlock.appendChild(listDOM);
     });
   }
-
+ /**
+   * Affiche dans les Droplist ingredients, ustensils et appliances
+   * @param {*string} type
+   */
   displayItem(type) {
     switch (type) {
       case "ingredients":
@@ -55,7 +58,7 @@ export default class SearchDropDown {
           this.recipes.forEach((recipe) => {
             const recipeIngredients = recipe.ingredients;
             recipeIngredients.forEach((ingredients) => {
-              //  console.log(ingredients)
+              
               const ingredient = ingredients.ingredient.toLowerCase();
 
               this.tableauIngredients.push(ingredient);
@@ -69,7 +72,7 @@ export default class SearchDropDown {
             this.dropIngredient,
             "ingredients"
           );
-          // console.log("TABIN", this.tableauIngredients);
+       
         };
 
         break;

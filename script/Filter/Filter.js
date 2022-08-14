@@ -44,11 +44,9 @@ export default class Filter {
     this.onfocusInput();
     this.input.oninput = (e) => {
       const searchString = e.target.value;
-      console.log(searchString);
 
       if (searchString.length > 2) {
         let filteredRecipe = this.recipes.filter((result) => {
-          console.log("RR", searchString.length);
           
           if (
             result.name.toLowerCase().includes(searchString) ||
