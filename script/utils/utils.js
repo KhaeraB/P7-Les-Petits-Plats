@@ -25,45 +25,24 @@ export function removeListItem(types) {
 export function toggle(type) {
   switch (type) {
     case "ingredients":
-      console.log("ouvert");
       document.querySelector(`.${type}`).classList.toggle("expanded");
       document.querySelector(`.appliances`).classList.remove("expanded");
       document.querySelector(`.ustensils`).classList.remove("expanded");
-      if (document.querySelector(`.${type}`).classList.contains("expanded")) {
-        document.querySelector(`#search-ingredients`).placeholder =
-          "Rechercher un ingredient";
-      } else {
-        document.querySelector(`.${type}`).classList.remove("expanded");
-        document.querySelector(`#search-ingredients`).placeholder =
-          "Ingrédients";
-      }
+      
 
       break;
     case "appliances":
       document.querySelector(`.${type}`).classList.toggle("expanded");
       document.querySelector(`.ingredients`).classList.remove("expanded");
       document.querySelector(`.ustensils`).classList.remove("expanded");
-      if (document.querySelector(`.${type}`).classList.contains("expanded")) {
-        document.querySelector(`#search-appliances`).placeholder =
-          "Rechercher un appareil";
-      } else {
-        document.querySelector(`.${type}`).classList.remove("expanded");
-        document.querySelector(`#search-appliances`).placeholder = "Appareils";
-      }
-
+      
       break;
     case "ustensils":
       document.querySelector(`.${type}`).classList.toggle("expanded");
       document.querySelector(`.appliances`).classList.remove("expanded");
       document.querySelector(`.ingredients`).classList.remove("expanded");
 
-      if (document.querySelector(`.${type}`).classList.contains("expanded")) {
-        document.querySelector(`#search-ustensils`).placeholder =
-          "Rechercher un ustensile";
-      } else {
-        document.querySelector(`.${type}`).classList.remove("expanded");
-        document.querySelector(`#search-ustensils`).placeholder = "Ustensiles";
-      }
+      
       break;
     default:
       document.querySelector(`.${type}`).classList.remove("expanded");

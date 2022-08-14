@@ -1,6 +1,6 @@
 import CardRecipesFactory from "../Factory/CardRecipesFactory.js";
 import SearchDropDown from "../SearchDropDown.js";
-import { normalizeString } from "../utils/utils.js";
+import { normalizeString,  closeAllFilter } from "../utils/utils.js";
 export default class Filter {
   constructor(recipes) {
     this.recipes = recipes;
@@ -13,6 +13,7 @@ export default class Filter {
     this.inputUstensils = document.getElementById("search-ustensils");
   }
   onfocusInput(type) {
+    closeAllFilter()
     this.input.onfocus = () => {
       if (type == "ingredients") {
         document
