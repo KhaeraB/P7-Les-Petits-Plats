@@ -1,9 +1,8 @@
 import { normalizeString, toggle, removeListItem } from "./utils/utils.js";
 import CardRecipesFactory from "./Factory/CardRecipesFactory.js";
-import {recipes } from "../data/recipes.js"
-import Filter from "./Filter/Filter.js";
+import { recipes } from "../data/recipes.js";
 let TAGS = [];
-const ALL_RECIPES = recipes
+const ALL_RECIPES = recipes;
 export default class SearchDropDown {
   constructor(recipes) {
     this.recipes = recipes;
@@ -23,10 +22,7 @@ export default class SearchDropDown {
     this.displayItem("appliances");
     this.displayItem("ustensils");
     this.filtred = [];
-
-    new Filter(this.recipes)
     this.input = document.getElementById("find");
-   
   }
 
   generateItems(tab, domBlock, type) {
@@ -40,8 +36,8 @@ export default class SearchDropDown {
       listDOM.setAttribute("data-item", `${itemNormalized}`);
       listDOM.setAttribute("data-type", `${itemNormalized}`);
       listDOM.innerText = item[0].toUpperCase() + item.slice(1);
-      listDOM.addEventListener("click", () =>{ 
-        this.addBadge(type, item)
+      listDOM.addEventListener("click", () => {
+        this.addBadge(type, item);
       });
       return domBlock.appendChild(listDOM);
     });
@@ -50,7 +46,7 @@ export default class SearchDropDown {
   displayItem(type) {
     switch (type) {
       case "ingredients":
-      document.querySelector(".ingredients").onclick = (e) => {
+        document.querySelector(".ingredients").onclick = (e) => {
           e.stopPropagation();
 
           //toggle("ingredients");
@@ -83,7 +79,7 @@ export default class SearchDropDown {
 
           e.preventDefault();
           e.stopPropagation();
-     
+
           this.recipes.forEach((recipe) => {
             const appliance = recipe.appliance.toLowerCase();
 
@@ -125,94 +121,92 @@ export default class SearchDropDown {
         break;
     }
   }
-  addBadge(filter, badgeText) {
-   
+
+  /**
+   * *Add a badge
+   * @param {string, string} typeOfBadge, badgeText
+   */
+  addBadge(typeOfBadge, badgeText) {
     if (!TAGS.includes(badgeText)) {
       TAGS.push(badgeText);
       const tagBadge = `
-      <div id="tagItem" class="thumbnailTag thumbnail tags_${filter}" data-value ="${badgeText}">
-          <button id="btn-${filter}" >${badgeText}</button>
-          <i class="far fa-times-circle" data-type="${filter}"></i>
+      <div id="tagItem" class="thumbnailTag thumbnail tags_${typeOfBadge}" data-value ="${badgeText}">
+          <button id="btn-${typeOfBadge}" >${badgeText}</button>
+          <i class="far fa-times-circle" data-type="${typeOfBadge}"></i>
       </div>`;
-  
+
       let currentTag = document.querySelector("#thumbnail-tags-container");
 
       currentTag.innerHTML += tagBadge;
-     
+      // je recupère la liste filtrée et j'enlève les doublons
       this.filtred = [...this.filterList()];
-      this.filtred = [
-        ...new Set(this.filtred),
-      ];
+      this.filtred = [...new Set(this.filtred)];
 
-      this.buildNewListRecipes(this.filtred);
-   
-
+      // mise à jour de la liste
+      this.buildNewListRecipes(this.filtred, typeOfBadge);
     }
   }
 
-removeBagde(){
+  /**
+   *
+   * @param {string} type
+   */
+  removeBagde(type) {
+    if (TAGS.length == 0) this.filterList();
 
- 
-  const close = document.getElementsByClassName(`fa-times-circle`);
-      for (let closeItem of close) {
-        closeItem.addEventListener("click", (e) => {
-          e.stopPropagation()
-          e.preventDefault()
-        const textContent = e.currentTarget.parentNode.getAttribute("data-value");
-          //const tagType = e.currentTarget.getAttribute("data-type");
+    const close = document.getElementsByClassName(`fa-times-circle`);
+    for (let closeItem of close) {
+      closeItem.addEventListener("click", (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const textContent =
+          e.currentTarget.parentNode.getAttribute("data-value");
+        //const tagType = e.currentTarget.getAttribute("data-type");
 
-          TAGS = TAGS.filter((tag) => tag != textContent);
+        TAGS = TAGS.filter((tag) => tag != textContent);
 
-          // appel des CARD avec des fonctions filtrer par rapport au tags selectionnÃ© / Je boucle sur toute les recipes et je regarde si 
-          //recipies.ingredient inclus dans tableau des tags view card avec filerRecipes
+        // appel des CARD avec des fonctions filtrer par rapport au tags selectionné / Je boucle sur toute les recipes et je regarde si
+        //recipies.ingredient inclus dans tableau des tags view card avec filerRecipes
 
-          this.filtred = [...this.filterList()];
-          this.filtred = [
-            ...new Set(this.filtred),
-          ];
-          e.currentTarget.parentNode.remove();
-           this.filterList()
+        this.filtred = [...this.filterList()];
+        this.filtred = [...new Set(this.filtred)];
 
-          this.buildNewListRecipes(this.filtred);
-        
-        });
-      }
-}
-  // INITIALIZE LIST CARD_RECIPES
-  buildNewListRecipes(filtred) {
-    console.log("TAGS : ", TAGS);
-   if(TAGS.length > 0)
-  {   this.removeBagde()
+        e.currentTarget.parentNode.remove();
+        this.filterList();
+
+        this.buildNewListRecipes(this.filtred, type);
+      });
+    }
+  }
+
+  /**
+   * Mise à jour de la liste des recipes
+   * @param {Array of Object} filtred
+   * @param {string} type
+   */
+  buildNewListRecipes(filtred, type) {
+    // console.log("TAGS : ", TAGS);
+    // Si multiple recherche :(bare et badges) je met à jour la list "filtred"
+    if (!TAGS.length == 0 || !this.input.value == "") {
+      this.removeBagde(type);
       const viewCard = new CardRecipesFactory(filtred);
       viewCard.Recipes();
-      new SearchDropDown(filtred)
-    }else{
-      this.removeBagde()
-      console.log(this.recipes)
-      const viewCard = new CardRecipesFactory(this.recipes);
-      viewCard.Recipes();
-      new SearchDropDown(this.recipes)
-    }
-    if(TAGS.length == 0){
+    } else {
+      // si non j'affiche toute la liste
       const viewCard = new CardRecipesFactory(ALL_RECIPES);
       viewCard.Recipes();
-      new SearchDropDown(ALL_RECIPES)
+      new SearchDropDown(ALL_RECIPES);
     }
   }
 
-
-
-
-/**
- * *Collect Appilance datas
+  /**
+   * *Collect Appilance datas
    * @returns {Array.string}
    */
   collectAppliances(recipe) {
     const appliances = new Set();
 
-   
-      appliances.add(recipe.appliance.toLowerCase());
-    
+    appliances.add(recipe.appliance.toLowerCase());
 
     return [...appliances];
   }
@@ -224,10 +218,8 @@ removeBagde(){
   collectIngredients(recipe) {
     const ingredients = new Set();
 
-    console.log(recipe)
-      for (let item of recipe.ingredients) {
-        ingredients.add(item.ingredient.toLowerCase());
-      
+    for (let item of recipe.ingredients) {
+      ingredients.add(item.ingredient.toLowerCase());
     }
 
     return [...ingredients];
@@ -239,34 +231,64 @@ removeBagde(){
    */
   collectUstensils(recipe) {
     const ustensils = new Set();
-    
-      for (let ustensil of recipe.ustensils) {
-        ustensils.add(ustensil.toLowerCase());
-      
+
+    for (let ustensil of recipe.ustensils) {
+      ustensils.add(ustensil.toLowerCase());
     }
 
     return [...ustensils];
   }
 
-
-
+  /**
+   *  Recherche multiples -badges et barre de recherche principal
+   * @returns {Array of Object} recipesList
+   */
   filterList() {
-    let  RecipesByBadges = new Set()
+    let filteredRecipes = new Set(this.recipes)
+    let foundedRecipes = new Set();
+    const searchInput = this.input.value.toLowerCase();
+
+    // Si y a pas de badges je check dans la bare de recherche
+    if (TAGS.length == 0) {
+      foundedRecipes = this.recipes.filter((recipe) => {
+        if (
+          this.collectIngredients(recipe).includes(searchInput) ||
+          this.collectAppliances(recipe).includes(searchInput) ||
+          recipe.name.toLowerCase().includes(searchInput) ||
+          recipe.description.toLowerCase().includes(searchInput) ||
+          this.collectUstensils(recipe).includes(searchInput)
+        ) {
+          return recipe;
+        }
+      });
+    }
+
+    // Si J'ai des recherches par badges je check dans ingredients, ustensils et appliances
     TAGS.forEach((tag) => {
       tag = tag.toLowerCase();
-      RecipesByBadges = this.recipes.filter((recipe) => {
-  
-          if (this.collectIngredients(recipe).includes(tag) ||
+      foundedRecipes = this.recipes.filter((recipe) => {
+        if (
+          this.collectIngredients(recipe).includes(tag) ||
           this.collectAppliances(recipe).includes(tag) ||
-          this.collectUstensils(recipe).includes(tag)) return recipe
-  
-       });
-    });
- 
-    return RecipesByBadges;
-  }
-  
+          this.collectUstensils(recipe).includes(tag)
+        )
+          return recipe;
+      });
 
+      // je croise la liste avec le resultat précedent pour affiner la recherche
+        filteredRecipes = new Set(
+        [...foundedRecipes].filter((recipe) => filteredRecipes.has(recipe))
+        );
+
+    });
+
+    return filteredRecipes;
+  }
+
+  /**
+   * Filtre dans les Droplist ingredients, ustensils et appliances
+   * @param {*string} type
+   */
   filerByType(type) {
     let tableauIngredients = [];
     let tableauUstensils = [];
@@ -281,7 +303,6 @@ removeBagde(){
           this.recipes.forEach((recipe) => {
             const recipeIngredients = recipe.ingredients;
             recipeIngredients.forEach((ingredients) => {
-        
               const ingredient = ingredients.ingredient.toLowerCase();
               if (!tableauIngredients.includes(ingredient)) {
                 tableauIngredients.push(ingredient);
@@ -300,7 +321,6 @@ removeBagde(){
 
           if (!searchString.length == 0) {
             const filteredRecipe = this.recipes.filter((result) => {
-            
               if (
                 result.ingredients.find((items) => {
                   return items.ingredient.toLowerCase().includes(searchString);
@@ -373,7 +393,6 @@ removeBagde(){
           });
           if (!searchString.length == 0) {
             const filteredRecipe = this.recipes.filter((result) => {
-           
               if (
                 result.ustensils.find((items) => {
                   return items.toLowerCase().includes(searchString);
