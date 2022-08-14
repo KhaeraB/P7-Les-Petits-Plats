@@ -1,5 +1,5 @@
 import { SearchResultMessage } from "../utils/SearchResultMessage.js";
-
+import { normalizeString } from "../utils/utils.js";
 export default class CardRecipesFactory {
     constructor(recipes) {
         this.recipes = recipes
@@ -16,8 +16,7 @@ export default class CardRecipesFactory {
         this.wrapper.innerHTML = ""
         
         this.recipes.map(recipe => {
-            let photo = "";
-             photo = recipe.name.toLowerCase().replace(/\s/g, "");
+            let photo = normalizeString(recipe.name)
              
             const card = `
                 <article id="card" class="col-lg-3 col-md-6 m-4">

@@ -10,7 +10,7 @@ export default class App {
         this.input = document.getElementById("find")
         this.tag = document.getElementById("tag")
         this.close = document.querySelector('.fa-times-circle')
-        this.errorMessage = new SearchResultMessage(this.recipes);
+       new SearchResultMessage(this.recipes);
 
     }
  

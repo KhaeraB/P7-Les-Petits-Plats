@@ -2,7 +2,6 @@ import CardRecipesFactory from "../Factory/CardRecipesFactory.js";
 import SearchDropDown from "../SearchDropDown.js";
 import { closeAllFilter } from "../utils/utils.js";
 export default class Filter {
-  
   constructor(recipes) {
     this.recipes = recipes;
     this.input = document.getElementById("find");
@@ -10,7 +9,6 @@ export default class Filter {
     this.tags = [];
     this.onfocusInput();
   }
-
   onfocusInput(type) {
     closeAllFilter()
     this.input.onfocus = () => {
@@ -39,7 +37,7 @@ export default class Filter {
           .querySelector(`.dropdown-list-${type}`)
           .classList.remove("d-none");
       }
-    }
+    };
   }
 
   FilterDisplayRecipes() {
@@ -76,4 +74,5 @@ export default class Filter {
       }
     };
   }
+  
 }
