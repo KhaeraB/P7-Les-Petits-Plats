@@ -16,10 +16,7 @@ export class SearchResultMessage {
     }else{
       messageAside.classList.remove("opened");
     }
-   
-  
-
-    let message;
+   let message;
     const recipesQuantity = this.recipesList.length;
 
     if (recipesQuantity === 0) {
