@@ -185,17 +185,21 @@ export default class SearchDropDown {
    * @param {string} type
    */
   buildNewListRecipes(filtred, type) {
+    const messageAside = document.getElementById("message");
     // console.log("TAGS : ", TAGS);
     // Si multiple recherche :(bare et badges) je met à jour la list "filtred"
     if (!TAGS.length == 0 || !this.input.value == "") {
       this.removeBagde(type);
       const viewCard = new CardRecipesFactory(filtred);
       viewCard.Recipes();
+      new SearchDropDown(filtred);
+      messageAside.classList.add("opened");
     } else {
       // si non j'affiche toute la liste
       const viewCard = new CardRecipesFactory(ALL_RECIPES);
       viewCard.Recipes();
       new SearchDropDown(ALL_RECIPES);
+      messageAside.classList.remove("opened");
     }
   }
 

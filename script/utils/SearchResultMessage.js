@@ -1,15 +1,22 @@
+const TAGS =[]
 export class SearchResultMessage {
   constructor(recipesList) {
     this.recipesList = recipesList;
+    this.input = document.getElementById("find");
     this.displayMessage(recipesList);
+   
   }
   
 
   displayMessage() {
     const messageAside = document.getElementById("message");
     const messageSpan = document.querySelector("#message span");
-
-    messageAside.classList.remove("opened");
+    if(this.input.value.length > 2 ){
+      messageAside.classList.add("opened");
+    }else{
+      messageAside.classList.remove("opened");
+    }
+   
   
 
     let message;
@@ -31,8 +38,8 @@ export class SearchResultMessage {
     }
 
     messageSpan.textContent = message;
-
-    messageAside.classList.add("opened");
+    
+  
 
     this.closeMessageEvent();
   }
