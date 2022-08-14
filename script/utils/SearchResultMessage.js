@@ -1,4 +1,3 @@
-const TAGS =[]
 export class SearchResultMessage {
   constructor(recipesList) {
     this.recipesList = recipesList;
