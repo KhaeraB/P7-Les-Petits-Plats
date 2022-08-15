@@ -1,5 +1,5 @@
 import CardRecipesFactory from "../Factory/CardRecipesFactory.js";
-import SearchDropDown from "../SearchDropDown.js";
+import SearchDropDown from "./SearchDropDown.js";
 import { closeAllFilter } from "../utils/utils.js";
 export default class Filter {
   constructor(recipes) {

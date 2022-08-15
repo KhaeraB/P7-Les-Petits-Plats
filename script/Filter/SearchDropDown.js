@@ -1,6 +1,6 @@
-import { normalizeString, toggle, removeListItem } from "./utils/utils.js";
-import CardRecipesFactory from "./Factory/CardRecipesFactory.js";
-import { recipes } from "../data/recipes.js";
+import { normalizeString, toggle, removeListItem } from "../utils/utils.js";
+import CardRecipesFactory from "../Factory/CardRecipesFactory.js";
+import { recipes } from "../../data/recipes.js";
 let TAGS = [];
 const ALL_RECIPES = recipes;
 export default class SearchDropDown {
