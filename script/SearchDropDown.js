@@ -195,7 +195,6 @@ export default class SearchDropDown {
       this.removeBagde(type);
       const viewCard = new CardRecipesFactory(filtred);
       viewCard.Recipes();
-      new SearchDropDown(filtred);
       messageAside.classList.add("opened");
     } else {
       // si non j'affiche toute la liste
