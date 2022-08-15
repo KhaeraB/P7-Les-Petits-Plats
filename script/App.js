@@ -1,7 +1,7 @@
 import {recipes} from "../data/recipes.js";
 import CardRecipesFactory from "./Factory/CardRecipesFactory.js";
 import Filter from "./Filter/Filter.js";
-import DropList from './Factory/DropListFactory.js'
+import SearchDropDown from './SearchDropDown.js'
 import { SearchResultMessage } from "./utils/SearchResultMessage.js";
 
 export default class App {
@@ -10,7 +10,7 @@ export default class App {
         this.input = document.getElementById("find")
         this.tag = document.getElementById("tag")
         this.close = document.querySelector('.fa-times-circle')
-       new SearchResultMessage(this.recipes);
+        this.errorMessage = new SearchResultMessage(this.recipes);
 
     }
  
@@ -28,7 +28,7 @@ export default class App {
     }
 
     displayDropDown(){
-        return new DropList(this.recipes)
+        return new SearchDropDown(this.recipes)
     }
 
 }
