@@ -1,7 +1,7 @@
 import {recipes} from "../data/recipes.js";
 import CardRecipesFactory from "./Factory/CardRecipesFactory.js";
 import Filter from "./Filter/Filter.js";
-import SearchDropDown from './SearchDropDown.js'
+import DropList from './Factory/DropListFactory.js'
 import { SearchResultMessage } from "./utils/SearchResultMessage.js";
 
 export default class App {
@@ -28,7 +28,7 @@ export default class App {
     }
 
     displayDropDown(){
-        return new SearchDropDown(this.recipes)
+        return new DropList(this.recipes)
     }
 
 }
