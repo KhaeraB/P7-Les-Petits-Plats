@@ -1,6 +1,6 @@
-import { normalizeString, toggle, removeListItem } from "./utils/utils.js";
-import CardRecipesFactory from "./Factory/CardRecipesFactory.js";
-import { recipes } from "../data/recipes.js";
+import { normalizeString, toggle, removeListItem } from "../utils/utils.js";
+import CardRecipesFactory from "../Factory/CardRecipesFactory.js";
+import { recipes } from "../../data/recipes.js";
 let TAGS = [];
 const ALL_RECIPES = recipes;
 export default class SearchDropDown {
@@ -27,7 +27,7 @@ export default class SearchDropDown {
 
   generateItems(tab, domBlock, type) {
     removeListItem(type);
-    this.filerByType(type);
+    this.filerAdvanceInputsItem(type);
     tab.forEach((item) => {
       const itemNormalized = normalizeString(item);
       const listDOM = document.createElement("li");
@@ -139,7 +139,7 @@ export default class SearchDropDown {
 
       currentTag.innerHTML += tagBadge;
       // je recupère la liste filtrée et j'enlève les doublons
-      this.filtred = [...this.filterList()];
+      this.filtred = [...this.filterCrossBadgesInput()];
       this.filtred = [...new Set(this.filtred)];
 
       // mise à jour de la liste
@@ -152,7 +152,7 @@ export default class SearchDropDown {
    * @param {string} type
    */
   removeBagde(type) {
-    if (TAGS.length == 0) this.filterList();
+    if (TAGS.length == 0) this.filterCrossBadgesInput();
 
     const close = document.getElementsByClassName(`fa-times-circle`);
     for (let closeItem of close) {
@@ -168,11 +168,11 @@ export default class SearchDropDown {
         // appel des CARD avec des fonctions filtrer par rapport au tags selectionné / Je boucle sur toute les recipes et je regarde si
         //recipies.ingredient inclus dans tableau des tags view card avec filerRecipes
 
-        this.filtred = [...this.filterList()];
+        this.filtred = [...this.filterCrossBadgesInput()];
         this.filtred = [...new Set(this.filtred)];
 
         e.currentTarget.parentNode.remove();
-        this.filterList();
+        this.filterCrossBadgesInput();
 
         this.buildNewListRecipes(this.filtred, type);
       });
@@ -247,7 +247,7 @@ export default class SearchDropDown {
    *  Recherche multiples -badges et barre de recherche principal
    * @returns {Array of Object} recipesList
    */
-  filterList() {
+   filterCrossBadgesInput() {
     let filteredRecipes = new Set(this.recipes)
     let foundedRecipes = new Set();
     const searchInput = this.input.value.toLowerCase();
@@ -293,7 +293,7 @@ export default class SearchDropDown {
    * Filtre dans les Droplist ingredients, ustensils et appliances
    * @param {*string} type
    */
-  filerByType(type) {
+   filerAdvanceInputsItem(type) {
     let tableauIngredients = [];
     let tableauUstensils = [];
     let tableauAppliances = [];
