@@ -63,7 +63,7 @@ export default class Filter {
             }
           }
         }
-        console.log(recipesFiltered);
+       // console.log(recipesFiltered);
         const viewCard = new CardRecipesFactory([...new Set(recipesFiltered)]);
         viewCard.Recipes();
 

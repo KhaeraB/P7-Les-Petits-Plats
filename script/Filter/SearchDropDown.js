@@ -345,7 +345,7 @@ export default class SearchDropDown {
           e.stopPropagation();
           const searchString = e.target.value;
           this.recipes.forEach((recipe) => {
-            const recipeAppliance = recipe.appliance;
+            const recipeAppliance = recipe.appliance.toLowerCase();
             if (!tableauAppliances.includes(recipeAppliance)) {
               tableauAppliances.push(recipeAppliance);
               itemToDisplay = tableauAppliances.filter((item) =>
